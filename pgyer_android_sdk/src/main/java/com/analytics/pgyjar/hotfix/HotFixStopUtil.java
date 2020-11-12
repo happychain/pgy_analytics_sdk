@@ -7,11 +7,13 @@ import android.widget.Toast;
 import com.analytics.pgyjar.Analytics;
 import com.analytics.pgyjar.crash.PgyCrashManager;
 import com.analytics.pgyjar.crash.PgyerActivityManager;
-import com.analytics.pgyjar.util.PgyUserApplyInfo;
 import com.analytics.pgyjar.PACFrontjs;
 import com.analytics.pgyjar.PACStack;
 import com.analytics.pgyjar.api.PgyHttpRequest;
+import com.analytics.pgyjar.functionenum.FunctionEnum;
 import com.analytics.pgyjar.util.Utils;
+
+import java.util.List;
 
 
 /**
@@ -22,6 +24,7 @@ import com.analytics.pgyjar.util.Utils;
 public class HotFixStopUtil {
 
     private static final String TAG = "PGY_HotFixStopUtil";
+
     private boolean initData() {
 
         /**
@@ -29,18 +32,18 @@ public class HotFixStopUtil {
          */
         PgyHttpRequest.getInstance().checkPgySdk();
 
-        if (!Utils.getInstance().checkInt(PgyUserApplyInfo.getApiKey())) {
+        if (!Utils.getInstance().checkInt(Analytics.getApiKey())) {
             Toast.makeText(Analytics.mContext, "Apikey错误，错误码100001", Toast.LENGTH_LONG).show();
-            Log.e(TAG,"当前用户的ApiKey错误，错误码100001，请查看 https://seed.pgyer.com/vJOlUDPI");
+            Log.e(TAG, "当前用户的ApiKey错误，错误码100001，请查看 https://seed.pgyer.com/vJOlUDPI");
             return false;
-        } else if (!Utils.getInstance().checkInt(PgyUserApplyInfo.getAppKey())) {
+        } else if (!Utils.getInstance().checkInt(Analytics.getAppKey())) {
             Toast.makeText(Analytics.mContext, "Appkey错误，错误码100002", Toast.LENGTH_LONG).show();
-            Log.e(TAG,"当前应用的Appkey错，错误码100002，请查看 https://seed.pgyer.com/vJOlUDPI");
+            Log.e(TAG, "当前应用的Appkey错，错误码100002，请查看 https://seed.pgyer.com/vJOlUDPI");
             return false;
 
-        } else if (!Utils.getInstance().checkInt(PgyUserApplyInfo.getToken())) {
+        } else if (!Utils.getInstance().checkInt(Analytics.getToken())) {
             Toast.makeText(Analytics.mContext, "token错误，错误码100003", Toast.LENGTH_LONG).show();
-            Log.e(TAG,"当前用户的token错误，错误码100003，请查看 https://seed.pgyer.com/vJOlUDPI");
+            Log.e(TAG, "当前用户的token错误，错误码100003，请查看 https://seed.pgyer.com/vJOlUDPI");
             return false;
         }
         return true;
@@ -60,7 +63,7 @@ public class HotFixStopUtil {
     /**
      * 初始化要加载的东西
      */
-    public static void startFather(){
+    public static void startFather() {
         /**
          * 监听异常
          */
@@ -75,17 +78,32 @@ public class HotFixStopUtil {
 
     /**
      * 在检查版本结束后通过反射调用
-     *
+     * <p>
      * 开始请求注册
      */
-    private  void registerFrontjsAndStack() {
-        try {
-            Log.d(TAG, "开始注册");
-            PACStack.run(Analytics.mContext, PgyUserApplyInfo.getApiKey());
-            PACFrontjs.run(Analytics.mContext, PgyUserApplyInfo.getToken());
-        } catch (Exception e) {
-            Log.e(TAG, "getAndroidManifestKey e =" + e.getMessage());
-            e.printStackTrace();
+    private void registerFrontjsAndStack() {
+        Log.d(TAG, "开始注册");
+        PACStack.run();
+        PACFrontjs.run();
+
+        //注册用户选择的集成功能
+        List<FunctionEnum> functions = Analytics.functions;
+        if(functions!=null){
+            for (int i = 0; i<functions.size(); i++){
+                switch (functions.get(i)){
+                    case ANALYTICE_FUNCTION_SHAKE:
+                        Log.d(TAG,"初始化摇一摇功能");
+                        break;
+                    case NAME1:
+                        Log.d(TAG,"初始化NAME1功能");
+                        break;
+                     default:
+                         Log.e(TAG,"改功能尚未实现，错误码：10004");
+                }
+
+            }
         }
+
+
     }
 }

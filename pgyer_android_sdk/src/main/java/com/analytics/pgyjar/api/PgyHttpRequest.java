@@ -27,7 +27,6 @@ import com.analytics.pgyjar.util.CommonUtil;
 import com.analytics.pgyjar.util.FileUtil;
 import com.analytics.pgyjar.util.HttpDataUtil;
 import com.analytics.pgyjar.util.HttpURLConnectionBuilder;
-import com.analytics.pgyjar.util.PgyUserApplyInfo;
 import com.analytics.pgyjar.util.Utils;
 
 import org.json.JSONArray;
@@ -276,6 +275,7 @@ public class PgyHttpRequest implements DownLoaderTask.ExtractorProgressToSuccess
                 os.write(params.getBytes());
                 os.close();
                 int responseCode = connection.getResponseCode();
+                Log.d(TAG,"PACHttpRequestAsyncTask 成功");
                 result.put("status", String.valueOf(responseCode));
                 result.put("response", getStringFromConnection(connection));
 
@@ -298,6 +298,7 @@ public class PgyHttpRequest implements DownLoaderTask.ExtractorProgressToSuccess
             super.onPostExecute(result);
             Log.d(TAG, "请求结束");
             String status = result.get("status");
+            Log.d(TAG, "请求结束 status="+status);
             if (status == null) {
                 Log.d(TAG, "current status is null");
                 return;
@@ -342,7 +343,7 @@ public class PgyHttpRequest implements DownLoaderTask.ExtractorProgressToSuccess
                 detail.put("trace", Utils.getInstance().ExceptionToStringBuffer(exception).toString());//错误内容
                 data.put("detail", detail);
                 params.put("data", data);
-                info = HttpDataUtil.getErrorParams(Analytics.mContext, CommonUtil.ERROR_REPORT, params, PgyUserApplyInfo.getToken());
+                info = HttpDataUtil.getErrorParams(Analytics.mContext, CommonUtil.ERROR_REPORT, params, Analytics.getToken());
             } else {
                 info = content;
             }
@@ -357,10 +358,10 @@ public class PgyHttpRequest implements DownLoaderTask.ExtractorProgressToSuccess
      */
     public void checkSoftwareUpdate() {
         StringBuilder builder = new StringBuilder("?_api_key=");
-        builder.append(PgyUserApplyInfo.getApiKey());
+        builder.append(Analytics.getApiKey());
         builder.append("&");
         builder.append("appKey=");
-        builder.append(PgyUserApplyInfo.getAppKey());
+        builder.append(Analytics.getAppKey());
         builder.append("&buildVersion=");
         builder.append(GetPgySettingData.getVersionCode());
         Log.e(TAG,"开始新版本检查网络请求");
@@ -429,7 +430,7 @@ public class PgyHttpRequest implements DownLoaderTask.ExtractorProgressToSuccess
                                 builder.setTicker("Pgy Ticker")
                                         .setContentTitle("版本更新")
                                         .setContentText(buildUpdateDescription)
-                                        .setSmallIcon(PgyUserApplyInfo.getApplyInfo())
+                                        .setSmallIcon(android.R.mipmap.sym_def_app_icon)
                                         .setAutoCancel(true)
                                         .setLargeIcon(GetPgySettingData.getBitmap())
                                         .setContentIntent(pendingIntent)
@@ -441,7 +442,7 @@ public class PgyHttpRequest implements DownLoaderTask.ExtractorProgressToSuccess
                                 builder.setTicker("Pgy Ticker")
                                         .setContentTitle("版本更新")
                                         .setContentText(buildUpdateDescription)
-                                        .setSmallIcon(PgyUserApplyInfo.getApplyInfo())
+                                        .setSmallIcon(android.R.mipmap.sym_def_app_icon)
                                         .setContentIntent(pendingIntent)
                                         .setLargeIcon(GetPgySettingData.getBitmap());
                                 getNotificationManager().notify(1, builder.getNotification());

@@ -10,9 +10,6 @@ public class CommonUtil {
      */
     public static String CURRENT_SDK_VERSION = "000008";
 
-    /**
-     *
-     */
     public static final String BASE_URL = "https://collecter.frontjs.com/";
 
     /**

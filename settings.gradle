@@ -1,2 +1,2 @@
 include ':app', ':pgyer_android_sdk'
-rootProject.name = "pgy_analytics_sdk"
+rootProject.name = "sdk"

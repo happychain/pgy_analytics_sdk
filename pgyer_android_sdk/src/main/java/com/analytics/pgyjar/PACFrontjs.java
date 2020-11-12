@@ -1,6 +1,7 @@
 package com.analytics.pgyjar;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.analytics.pgyjar.util.CommonUtil;
@@ -15,19 +16,17 @@ import java.util.TimerTask;
 public class PACFrontjs {
 
     private static final String TAG = "PGY_PACFrontjs";
-    static String token = null;
     static int heartInterval = 10;
     static int view = 0;
 
     public static Timer timer;
 
-    public static void run(final Context context, final String token) {
-        PACFrontjs.token = token;
+    public static void run() {
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                send(context);
+                send();
                 view += heartInterval;
             }
         }, 0, heartInterval * 1000);
@@ -41,7 +40,7 @@ public class PACFrontjs {
         }
     }
 
-    public static void send(final Context context) {
+    private static void send() {
         // https://front.pgyer.yunhuiju.com/collecter/
         // https://collecter.frontjs.com/
         Log.e(TAG, "开始请求PACFrontjs");
@@ -58,7 +57,7 @@ public class PACFrontjs {
             data.put("detail", detail);
             params.put("data", data);
             PgyHttpRequest.getInstance().sendPACHttpRequest(CommonUtil.BASE_URL,
-                    HttpDataUtil.getParams(context, CommonUtil.JUMP_PAGE, token, params), null);
+                    HttpDataUtil.getParams(Analytics.mContext, CommonUtil.JUMP_PAGE, Analytics.getToken(), params), null);
         } catch (Exception e) {
 
         }

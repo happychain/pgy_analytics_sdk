@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.analytics.pgyjar.Analytics;
 import com.analytics.pgyjar.util.CommonUtil;
-import com.analytics.pgyjar.util.PgyUserApplyInfo;
 
 import java.io.File;
 import java.lang.reflect.Array;
@@ -31,13 +30,7 @@ public class HotFixUtils {
     private static final String DEX_SUFFIX = ".dex";
     private static final String OPTIMIZE_DEX_DIR = "odex";
 
-    public void initHotFix(String apiKey, String token, String appKey, int icon) {
-
-
-        PgyUserApplyInfo.setApiKey(apiKey);
-        PgyUserApplyInfo.setToken(token);
-        PgyUserApplyInfo.setAppKey(appKey);
-        PgyUserApplyInfo.setAppIcon(icon);
+    public void initHotFix() {
         HotfixAsyncTask task = new HotfixAsyncTask();
         task.execute();
     }
